@@ -26,6 +26,15 @@ fmt-check:
   script:
     - terraform fmt -recursive -check
 
+tflint:
+  stage: lint
+  image:
+    name: wata727/tflint
+    entrypoint: ["/bin/sh", "-c"]
+  script:
+    - cd terraform
+    - tflint .
+
 validate:
   stage: test
   cache:
