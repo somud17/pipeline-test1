@@ -6,8 +6,7 @@ image:
 
 cache:
   paths:
-    - .terraform/plugins
-    - .terraform/modules
+    - terraform/.terraform
 
 stages:
   - lint
@@ -47,10 +46,13 @@ test:
     - cd /go/src/terratest/test
     - dep ensure -v
     - go test -v
+  only:
+    - test
 
 plan:
   stage: plan
   script:
+    - cd terraform
     - terraform plan -out out.tfplan
   artifacts:
     expire_in: 8 weeks
@@ -62,6 +64,9 @@ apply:
   script:
     - terraform apply -input=false out.tfplan
   when: manual
+  only:
+    - tags
+    - master
 
 destroy:
   stage: destroy
