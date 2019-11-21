@@ -63,8 +63,8 @@ plan:
   stage: plan
   script:
     - cd terraform
-    - terraform init
     - echo $tfc_credentials > /root/.terraformrc
+    - terraform init
     - terraform plan -out out.tfplan
   artifacts:
     expire_in: 8 weeks
@@ -75,8 +75,8 @@ apply:
   stage: apply
   script:
     - cd terraform
-    - terraform init
     - echo $tfc_credentials > /root/.terraformrc
+    - terraform init
     - terraform apply -input=false out.tfplan
   when: manual
   only:
@@ -87,7 +87,7 @@ destroy:
   stage: destroy
   script:
     - cd terraform
-    - terraform init
     - echo $tfc_credentials > /root/.terraformrc
+    - terraform init
     - terraform destroy -auto-approve
   when: manual
