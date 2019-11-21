@@ -63,6 +63,7 @@ plan:
   stage: plan
   script:
     - cd terraform
+    - terraform init
     - echo $tfc_credentials > /root/.terraformrc
     - terraform plan -out out.tfplan
   artifacts:
@@ -74,6 +75,7 @@ apply:
   stage: apply
   script:
     - cd terraform
+    - terraform init
     - echo $tfc_credentials > /root/.terraformrc
     - terraform apply -input=false out.tfplan
   when: manual
@@ -85,6 +87,7 @@ destroy:
   stage: destroy
   script:
     - cd terraform
+    - terraform init
     - echo $tfc_credentials > /root/.terraformrc
     - terraform destroy -auto-approve
   when: manual
