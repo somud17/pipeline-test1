@@ -1,0 +1,72 @@
+---
+image:
+  name: hashicorp/terraform
+  entrypoint:
+    - /usr/bin/env
+
+cache:
+  paths:
+    - .terraform/plugins
+    - .terraform/modules
+
+stages:
+  - lint
+  - test
+  - plan
+  - apply
+  - destroy
+
+yamllint:
+  image: sdesbure/yamllint
+  stage: lint
+  script:
+    - yamllint .
+
+fmt-check:
+  stage: lint
+  script:
+    - terraform fmt -recursive -check
+
+validate:
+  stage: test
+  cache:
+    policy: push
+  script:
+    - cd terraform/
+    - terraform init
+    - terraform version
+    - terraform validate
+
+test:
+  image:
+    name: registry.gitlab.com/who-docker/docker-terratest
+    entrypoint: ["/bin/sh", "-c"]
+  stage: test
+  script:
+    - cp -r $CI_PROJECT_DIR /go/src/terratest
+    - cd /go/src/terratest/test
+    - dep ensure -v
+    - go test -v
+
+plan:
+  stage: plan
+  script:
+    - terraform plan -out out.tfplan
+  artifacts:
+    expire_in: 8 weeks
+    paths:
+      - out.tfplan
+
+apply:
+  stage: apply
+  script:
+    - terraform apply -input=false out.tfplan
+  when: manual
+
+destroy:
+  stage: destroy
+  script:
+    - terraform init
+    - terraform version
+    - terraform destroy -auto-approve
+  when: manual
