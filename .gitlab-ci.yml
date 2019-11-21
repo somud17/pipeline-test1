@@ -41,6 +41,7 @@ validate:
     policy: push
   script:
     - cd terraform/
+    - echo $tfc_credentials > credentials.tf
     - terraform init
     - terraform version
     - terraform validate
