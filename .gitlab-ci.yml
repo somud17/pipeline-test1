@@ -36,6 +36,12 @@ tflint:
     - cd terraform
     - tflint .
 
+eslint:
+  stage: lint
+  image: willhallonline/eslint-standard:alpine
+  script:
+    - eslint ./lambda-function
+
 dockerfile-lint:
   stage: lint
   image: hadolint/hadolint:latest-debian

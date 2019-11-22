@@ -1,6 +1,6 @@
 'use strict'
 
-exports.handler = function(event, context, callback) {
+exports.handler = function (event, context, callback) {
   var response = {
     statusCode: 200,
     headers: {
