@@ -11,6 +11,7 @@ cache:
 stages:
   - lint
   - test
+  - package
   - plan
   - apply
   - destroy
@@ -59,17 +60,35 @@ test:
   only:
     - test
 
+container:
+  stage: package
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+    - docker push $CI_REGISTRY_IMAGE:latest
+
+package:
+  stage: package
+  image: mikesir87/aws-cli
+  script:
+    - zip hello.zip ./lambda-function/
+    - aws s3 cp example.zip s3://terraform-serverless-example/$CI_COMMIT_TAG/hello.zip
+  only:
+    - tags
+
 plan:
   stage: plan
   script:
     - cd terraform
     - echo $tfc_credentials > /root/.terraformrc
     - terraform init
-    - terraform plan -out out.tfplan
+    - terraform plan -var 's3_key=$CI_COMMIT_TAG/hello.zip' -out out.tfplan
   artifacts:
     expire_in: 8 weeks
     paths:
-      - out.tfplan
+      - terraform/out.tfplan
 
 apply:
   stage: apply
