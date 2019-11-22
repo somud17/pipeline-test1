@@ -36,6 +36,12 @@ tflint:
     - cd terraform
     - tflint .
 
+dockerfile-lint:
+  stage: lint
+  image: hadolint/hadolint
+  script:
+    - hadolint ./Dockerfile
+
 validate:
   stage: test
   cache:
