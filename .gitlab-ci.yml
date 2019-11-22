@@ -38,9 +38,9 @@ tflint:
 
 dockerfile-lint:
   stage: lint
-  image: hadolint/hadolint
+  image: hadolint/hadolint:latest-debian
   script:
-    - hadolint ./Dockerfile
+    - hadolint Dockerfile
 
 validate:
   stage: test
