@@ -116,6 +116,8 @@ plan:
     expire_in: 8 weeks
     paths:
       - terraform/out.tfplan
+  only:
+    - tags
 
 apply:
   stage: apply
@@ -127,7 +129,6 @@ apply:
   when: manual
   only:
     - tags
-    - master
 
 destroy:
   stage: destroy
@@ -137,3 +138,5 @@ destroy:
     - terraform init
     - terraform destroy -auto-approve
   when: manual
+  only:
+    - tags
