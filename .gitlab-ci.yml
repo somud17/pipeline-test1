@@ -100,8 +100,9 @@ package:
   stage: package
   image: registry.gitlab.com/who-docker/aws-cli:latest
   script:
-    - zip hello.zip ./lambda-function/
-    - aws s3 cp hello.zip s3://wh-terraform-hello/$CI_COMMIT_TAG/hello.zip
+    - cd lambda-function
+    - zip ../hello.zip main.js
+    - aws s3 cp ../hello.zip s3://wh-terraform-hello/$CI_COMMIT_TAG/hello.zip
   only:
     - tags
 
