@@ -51,8 +51,8 @@ dockerfile-lint:
 validate:
   stage: test
   script:
-    - cd terraform/
-    - echo $tfc_credentials > ~/.terraformrc
+    - cd terraform
+    - echo $tfc_credentials > /root/.terraformrc
     - terraform init
     - terraform version
     - terraform validate
