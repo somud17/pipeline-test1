@@ -74,7 +74,9 @@ test:
 
 container:
   stage: package
-  image: docker:dind
+  image: docker:latest
+  services:
+    - docker:dind
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
