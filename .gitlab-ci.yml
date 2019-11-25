@@ -50,11 +50,9 @@ dockerfile-lint:
 
 validate:
   stage: test
-  cache:
-    policy: push
   script:
     - cd terraform/
-    - echo $tfc_credentials > /root/.terraformrc
+    - echo $tfc_credentials > ~/.terraformrc
     - terraform init
     - terraform version
     - terraform validate
