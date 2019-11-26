@@ -111,9 +111,9 @@ plan:
   script:
     - cd terraform
     - echo $tfc_credentials > /root/.terraformrc
-    - export VAR=\'s3_key=$CI_COMMIT_TAG/hello.zip\'
+    - export s3_key=$CI_COMMIT_TAG/hello.zip
     - terraform init
-    - terraform plan -var $VAR -out out.tfplan
+    - terraform plan -var "s3_key=$CI_COMMIT_TAG/hello.zip" -out out.tfplan
   artifacts:
     expire_in: 8 weeks
     paths:
