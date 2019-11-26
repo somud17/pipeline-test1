@@ -2,10 +2,10 @@
 
 Because I should write down what happens.
 
-## v0.0.2
+## v0.1.0
 
-* Take 2.
+- Initial release. Working pipeline.
 
-## v0.0.1
+## v0.0.1-11
 
-* A first version - validate keeps failing.
+- Various issues resolved. Completed pipeline at end.
