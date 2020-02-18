@@ -2,6 +2,10 @@
 
 Because I should write down what happens.
 
+## v0.1.5
+
+Separate to module and test deployment of multiple functions.
+
 ## v0.1.1
 
 - Nikos and Carlos release.
