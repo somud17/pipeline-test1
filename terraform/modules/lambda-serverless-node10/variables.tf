@@ -23,9 +23,9 @@ variable "s3_key" {
 }
 
 variable "subdomain" {
-  type = string
+  type        = string
   description = "Subdomain of the function URL"
-  default = "v0-1-1"
+  default     = "v0-1-1"
 }
 
 variable "handler" {

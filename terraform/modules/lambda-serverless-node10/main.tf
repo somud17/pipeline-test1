@@ -104,7 +104,7 @@ resource "aws_lambda_permission" "apigw" {
 }
 
 data "aws_route53_zone" "selected" {
-  name         = "go.willhallonline.net"
+  name = "go.willhallonline.net"
 }
 
 resource "aws_route53_record" "subdomain" {
