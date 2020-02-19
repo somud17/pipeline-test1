@@ -1,3 +1,7 @@
+data "aws_iam_role" "lambda_exec" {
+  name = "lambda_exec"
+}
+
 resource "aws_lambda_function" "hello" {
   function_name = var.function_name
 
@@ -11,30 +15,7 @@ resource "aws_lambda_function" "hello" {
   handler = var.handler
   runtime = var.runtime
 
-  role = aws_iam_role.lambda_exec.arn
-}
-
-# IAM role which dictates what other AWS services the Lambda function
-# may access.
-resource "aws_iam_role" "lambda_exec" {
-  name = "lambda_exec"
-
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
-
+  role = data.aws_iam_role.lambda_exec.arn
 }
 
 resource "aws_api_gateway_rest_api" "hello" {
@@ -107,10 +88,26 @@ data "aws_route53_zone" "selected" {
   name = "go.willhallonline.net"
 }
 
-resource "aws_route53_record" "subdomain" {
-  zone_id = data.aws_route53_zone.selected.zone_id
-  name    = "${var.subdomain}.${data.aws_route53_zone.selected.name}"
-  type    = "CNAME"
-  ttl     = "300"
-  records = aws_api_gateway_deployment.hello.invoke_url
+# resource "aws_route53_record" "subdomain" {
+#   zone_id = data.aws_route53_zone.selected.zone_id
+#   name    = "${var.subdomain}.${data.aws_route53_zone.selected.name}"
+#   type    = "CNAME"
+#   ttl     = "300"
+#   records = aws_api_gateway_deployment.hello.invoke_url
+# }
+
+data "aws_acm_certificate" "hello" {
+  domain   = "*.go.willhallonline.net"
+  statuses = ["ISSUED"]
+}
+
+resource "aws_api_gateway_domain_name" "hello" {
+  domain_name = "v0-1-4.go.willhallonline.net"
+  certificate_arn = data.aws_acm_certificate.hello.arn
+}
+
+resource "aws_api_gateway_base_path_mapping" "hello" {
+  api_id      = aws_api_gateway_rest_api.hello.id
+  stage_name  = aws_api_gateway_deployment.hello.stage_name
+  domain_name = aws_api_gateway_domain_name.hello.domain_name
 }
