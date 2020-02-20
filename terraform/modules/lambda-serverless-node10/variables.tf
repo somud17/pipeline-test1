@@ -53,5 +53,5 @@ variable "describe_function" {
 
 variable "edge_cert_arn" {
   type    = string
-  default = ""
+  default = "arn:aws:acm:us-east-1:436614339345:certificate/d74f5b6c-d0b1-4231-a06a-90d71698a6b9"
 }
