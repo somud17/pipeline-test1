@@ -127,7 +127,6 @@ apply:
     - echo $tfc_credentials > /root/.terraformrc
     - terraform init
     - terraform apply -input=false out.tfplan
-  when: manual
   only:
     - tags
 
