@@ -40,3 +40,18 @@ variable "runtime" {
   default     = "nodejs10.x"
 }
 
+variable "domain" {
+  type    = string
+  default = "go.willhallonline.net"
+}
+
+variable "describe_function" {
+  type        = string
+  description = "A description of the function. Very inception."
+  default     = "Describe me."
+}
+
+variable "edge_cert_arn" {
+  type    = string
+  default = ""
+}

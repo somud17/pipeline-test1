@@ -1,5 +1,24 @@
-data "aws_iam_role" "lambda_exec" {
-  name = "lambda_exec"
+# IAM role which dictates what other AWS services the Lambda function
+# may access.
+resource "aws_iam_role" "lambda_exec" {
+  name = var.function_name
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+
 }
 
 resource "aws_lambda_function" "hello" {
@@ -15,12 +34,12 @@ resource "aws_lambda_function" "hello" {
   handler = var.handler
   runtime = var.runtime
 
-  role = data.aws_iam_role.lambda_exec.arn
+  role = aws_iam_role.lambda_exec.arn
 }
 
 resource "aws_api_gateway_rest_api" "hello" {
   name        = var.function_name
-  description = "Terraform Serverless Hello World"
+  description = var.describe_function
 }
 
 resource "aws_api_gateway_resource" "proxy" {
@@ -70,7 +89,7 @@ resource "aws_api_gateway_deployment" "hello" {
   ]
 
   rest_api_id = aws_api_gateway_rest_api.hello.id
-  stage_name  = "test"
+  stage_name  = "api"
 }
 
 resource "aws_lambda_permission" "apigw" {
@@ -85,29 +104,24 @@ resource "aws_lambda_permission" "apigw" {
 }
 
 data "aws_route53_zone" "selected" {
-  name = "go.willhallonline.net"
-}
-
-# resource "aws_route53_record" "subdomain" {
-#   zone_id = data.aws_route53_zone.selected.zone_id
-#   name    = "${var.subdomain}.${data.aws_route53_zone.selected.name}"
-#   type    = "CNAME"
-#   ttl     = "300"
-#   records = aws_api_gateway_deployment.hello.invoke_url
-# }
-
-data "aws_acm_certificate" "hello" {
-  domain   = "*.go.willhallonline.net"
-  statuses = ["ISSUED"]
+  name = var.domain
 }
 
 resource "aws_api_gateway_domain_name" "hello" {
-  domain_name = "v0-1-4.go.willhallonline.net"
-  certificate_arn = data.aws_acm_certificate.hello.arn
+  domain_name     = "${var.subdomain}.${var.domain}"
+  certificate_arn = var.edge_cert_arn
 }
 
 resource "aws_api_gateway_base_path_mapping" "hello" {
   api_id      = aws_api_gateway_rest_api.hello.id
   stage_name  = aws_api_gateway_deployment.hello.stage_name
   domain_name = aws_api_gateway_domain_name.hello.domain_name
+}
+
+resource "aws_route53_record" "subdomain" {
+  zone_id = data.aws_route53_zone.selected.zone_id
+  name    = "${var.subdomain}.${data.aws_route53_zone.selected.name}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = [aws_api_gateway_domain_name.hello.cloudfront_domain_name]
 }
